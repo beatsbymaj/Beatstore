@@ -1,0 +1,67 @@
+[
+  {
+    "id": "basic",
+    "name": "Basic Lease",
+    "price": 29.99,
+    "features": [
+      "MP3 only",
+      "50k streams",
+      "1 music video"
+    ],
+    "filesIncluded": [
+      "mp3"
+    ],
+    "streamLimit": 50000,
+    "usageTerms": "Non-exclusive lease with standard distribution rights."
+  },
+  {
+    "id": "premium",
+    "name": "Premium Lease",
+    "price": 59.99,
+    "features": [
+      "MP3 + WAV",
+      "250k streams",
+      "2 music videos"
+    ],
+    "filesIncluded": [
+      "mp3",
+      "wav"
+    ],
+    "streamLimit": 250000,
+    "usageTerms": "Non-exclusive lease with extended distribution rights."
+  },
+  {
+    "id": "unlimited",
+    "name": "Unlimited Lease",
+    "price": 129.99,
+    "features": [
+      "MP3 + WAV + Stems",
+      "Unlimited streams",
+      "Unlimited videos"
+    ],
+    "filesIncluded": [
+      "mp3",
+      "wav",
+      "stems"
+    ],
+    "streamLimit": -1,
+    "usageTerms": "Non-exclusive lease with unlimited distribution rights."
+  },
+  {
+    "id": "exclusive",
+    "name": "Exclusive Rights",
+    "price": 499.99,
+    "features": [
+      "All files",
+      "Full ownership",
+      "Beat removed from store"
+    ],
+    "filesIncluded": [
+      "mp3",
+      "wav",
+      "stems"
+    ],
+    "streamLimit": -1,
+    "usageTerms": "Exclusive ownership. Beat will be removed from store after purchase."
+  }
+]

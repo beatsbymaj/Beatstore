@@ -1,0 +1,57 @@
+[
+  {
+    "id": "tx_1a2b3c",
+    "date": "2025-11-27T14:23:00Z",
+    "beatId": "trap_wave_001",
+    "beatTitle": "Trap Wave 001",
+    "licenseId": "premium",
+    "licenseName": "Premium",
+    "customer": "john@example.com",
+    "amount": 59.99,
+    "status": "completed"
+  },
+  {
+    "id": "tx_4d5e6f",
+    "date": "2025-11-27T11:15:00Z",
+    "beatId": "rnb_vibes_002",
+    "beatTitle": "R&B Vibes 002",
+    "licenseId": "basic",
+    "licenseName": "Basic",
+    "customer": "sarah@example.com",
+    "amount": 29.99,
+    "status": "completed"
+  },
+  {
+    "id": "tx_7g8h9i",
+    "date": "2025-11-26T19:42:00Z",
+    "beatId": "club_banger_003",
+    "beatTitle": "Club Banger 003",
+    "licenseId": "unlimited",
+    "licenseName": "Unlimited",
+    "customer": "mike@example.com",
+    "amount": 129.99,
+    "status": "completed"
+  },
+  {
+    "id": "tx_0j1k2l",
+    "date": "2025-11-26T16:08:00Z",
+    "beatId": "trap_wave_001",
+    "beatTitle": "Trap Wave 001",
+    "licenseId": "exclusive",
+    "licenseName": "Exclusive",
+    "customer": "artist@example.com",
+    "amount": 499.99,
+    "status": "completed"
+  },
+  {
+    "id": "sale_1764306635386_igzyi1ng9",
+    "beatId": "bottom_of_the_map_1764275319309",
+    "beatTitle": "bottom of the map",
+    "licenseId": "basic",
+    "licenseName": "Basic Lease",
+    "customer": "marionajones54@gmail.com",
+    "amount": 29.99,
+    "date": "2025-11-28T05:10:35.386Z",
+    "status": "completed"
+  }
+]

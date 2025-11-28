@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Beats By M.A.J. – Beat Store</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- Tailwind CDN for quick styling -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		/* Simple custom scrollbar for the beat list */
+		.beat-scroll::-webkit-scrollbar {
+			width: 6px;
+		}
+		.beat-scroll::-webkit-scrollbar-thumb {
+			border-radius: 9999px;
+		}
+	</style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-4">
+	<div
+		class="w-full max-w-5xl bg-slate-900/80 border border-slate-700/70 rounded-3xl shadow-xl shadow-black/40 p-6 md:p-8 backdrop-blur">
+		<div class="flex flex-col md:flex-row gap-6">
+			<!-- Left: Beat list -->
+			<div class="md:w-1/2">
+				<h2 class="text-2xl font-bold tracking-tight mb-4">🔥 Beats By M.A.J. – Beat Store</h2>
+				<p class="text-slate-300 text-sm mb-4">
+					Click a beat to preview, pick your license, then hit <span class="font-semibold">Buy Now</span>
+					to get the beat + license delivered straight to your email.
+				</p>
+
+				<div class="beat-scroll max-h-80 overflow-y-auto pr-2 space-y-2">
+					<!-- Beat list items rendered by JS -->
+					<div id="beat-list" class="space-y-2"></div>
+				</div>
+			</div>
+
+			<!-- Right: Player + License + Checkout -->
+			<div class="md:w-1/2 flex flex-col gap-4">
+				<!-- Currently selected beat info -->
+				<div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4">
+					<p class="text-xs uppercase tracking-wide text-slate-400 mb-1">Now Previewing</p>
+					<h3 id="currentBeatTitle" class="text-xl font-semibold">
+						Select a beat from the list →
+					</h3>
+					<p id="currentBeatBpm" class="text-sm text-slate-400"></p>
+					<p id="currentBeatMood" class="text-sm text-slate-400"></p>
+				</div>
+
+				<!-- Audio controls -->
+				<div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 flex items-center gap-4">
+					<button id="playPauseBtn"
+									class="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center
+												 shadow-lg shadow-emerald-500/40 transition disabled:opacity-40 disabled:cursor-not-allowed">
+						▶
+					</button>
+					<div class="flex-1">
+						<div class="flex justify-between text-xs text-slate-400 mb-1">
+							<span id="currentTime">0:00</span>
+							<span id="duration">0:00</span>
+						</div>
+						<input id="seekBar" type="range" min="0" max="100" value="0"
+									 class="w-full accent-emerald-500 cursor-pointer" />
+					</div>
+				</div>
+
+				<!-- License selection -->
+				<div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
+					<p class="text-xs uppercase tracking-wide text-slate-400">License</p>
+					<div class="flex flex-col gap-3">
+						<select id="licenseSelect"
+										class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+						</select>
+						<div class="flex items-center justify-between text-sm">
+							<span class="text-slate-400">Price</span>
+							<span id="licensePrice" class="text-lg font-semibold text-emerald-400">$0.00</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Email + Buy -->
+				<div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
+					<label class="block text-xs uppercase tracking-wide text-slate-400 mb-1" for="buyerEmail">
+						Your Email (delivery)
+					</label>
+					<input id="buyerEmail" type="email" placeholder="you@email.com"
+								 class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm
+												focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+
+					<button id="buyBtn"
+									class="mt-3 w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 py-3 text-sm font-semibold
+												 shadow-lg shadow-emerald-500/40 transition disabled:opacity-40 disabled:cursor-not-allowed">
+						💳 Buy Now – Get Beat + License
+					</button>
+
+					<p id="statusMsg" class="text-xs text-slate-400 mt-2"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Audio element (hidden) -->
+	<audio id="audio"></audio>
+
+	<script>
+		// -----------------------------
+		// CONFIG: Beats + Licenses
+		// -----------------------------
+		let beats = [];
+		let licenses = [];
+
+		// -----------------------------
+		// Fetch Beats from API
+		// -----------------------------
+		async function loadBeats() {
+			try {
+				const res = await fetch('/api/beats');
+				if (!res.ok) throw new Error('Failed to fetch beats');
+				const data = await res.json();
+				beats = data.filter(b => b.status === 'active');
+				renderBeatList();
+				if (beats.length === 0) {
+					beatListEl.innerHTML = '<p class="text-slate-400 text-sm p-4">No beats available yet. Upload beats in the admin panel.</p>';
+				}
+			} catch (err) {
+				console.error('Error loading beats:', err);
+				beatListEl.innerHTML = '<p class="text-red-400 text-sm p-4">Failed to load beats. Check server connection.</p>';
+			}
+		}
+
+		// -----------------------------
+		// Fetch Licenses from API
+		// -----------------------------
+		async function loadLicenses() {
+			try {
+				const res = await fetch('/api/licenses');
+				if (!res.ok) throw new Error('Failed to fetch licenses');
+				licenses = await res.json();
+				renderLicenses();
+				if (licenses.length > 0) {
+					currentLicense = licenses[0];
+					updateSelectedLicense();
+				}
+			} catch (err) {
+				console.error('Error loading licenses:', err);
+				// Fallback to default licenses
+				licenses = [
+					{
+						id: "basic",
+						name: "Basic Lease (MP3)",
+						price: 29.99,
+						description: "Untagged MP3, up to 50k streams, 1 music video."
+					},
+					{
+						id: "premium",
+						name: "Premium Lease (MP3 + WAV)",
+						price: 59.99,
+						description: "MP3 + WAV, up to 250k streams, 2 music videos."
+					},
+					{
+						id: "unlimited",
+						name: "Unlimited Lease",
+						price: 129.99,
+						description: "Unlimited streams, unlimited music videos."
+					},
+					{
+						id: "exclusive",
+						name: "Exclusive Rights",
+						price: 499.99,
+						description: "Beat removed from store, full ownership transfer."
+					}
+				];
+				renderLicenses();
+				if (licenses.length > 0) {
+					currentLicense = licenses[0];
+					updateSelectedLicense();
+				}
+			}
+		}
+
+		// -----------------------------
+		// DOM Elements
+		// -----------------------------
+		const beatListEl = document.getElementById("beat-list");
+		const currentBeatTitleEl = document.getElementById("currentBeatTitle");
+		const currentBeatBpmEl = document.getElementById("currentBeatBpm");
+		const currentBeatMoodEl = document.getElementById("currentBeatMood");
+		const playPauseBtn = document.getElementById("playPauseBtn");
+		const audioEl = document.getElementById("audio");
+		const seekBar = document.getElementById("seekBar");
+		const currentTimeEl = document.getElementById("currentTime");
+		const durationEl = document.getElementById("duration");
+		const licenseSelect = document.getElementById("licenseSelect");
+		const licensePriceEl = document.getElementById("licensePrice");
+		const buyerEmailEl = document.getElementById("buyerEmail");
+		const buyBtn = document.getElementById("buyBtn");
+		const statusMsgEl = document.getElementById("statusMsg");
+
+		let currentBeat = null;
+		let currentLicense = licenses[0];
+
+		// -----------------------------
+		// Render Beat List
+		// -----------------------------
+		function renderBeatList() {
+			beatListEl.innerHTML = "";
+			beats.forEach((beat) => {
+				const item = document.createElement("button");
+				item.className =
+					"w-full text-left bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/80 " +
+					"rounded-2xl px-3 py-2 flex items-center justify-between gap-2 transition";
+				item.innerHTML = `
+					<div>
+						<p class="text-sm font-semibold">${beat.title}</p>
+						<p class="text-xs text-slate-400">${beat.bpm} BPM • ${beat.key}</p>
+					</div>
+					<span class="text-xs text-slate-400">Preview ▶</span>
+				`;
+				item.addEventListener("click", () => selectBeat(beat));
+				beatListEl.appendChild(item);
+			});
+		}
+
+		// -----------------------------
+		// Select Beat
+		// -----------------------------
+		function selectBeat(beat) {
+			currentBeat = beat;
+			const preferredSrc = beat.mp3Url || beat.audioUrl || beat.wavUrl || '';
+			audioEl.src = preferredSrc;
+			audioEl.load(); // Force reload
+			audioEl.currentTime = 0;
+			seekBar.value = 0;
+			currentBeatTitleEl.textContent = beat.title;
+			currentBeatBpmEl.textContent = `${beat.bpm} BPM • Key: ${beat.key}`;
+			currentBeatMoodEl.textContent = beat.mood;
+			playPauseBtn.disabled = false;
+			statusMsgEl.textContent = '';
+			statusMsgEl.className = 'text-xs text-slate-400 mt-2';
+			
+			// Handle audio errors
+			audioEl.onerror = (e) => {
+				console.error('Audio error:', e);
+				statusMsgEl.textContent = `⚠️ Audio not available. Please upload MP3/WAV for this beat in admin.`;
+				statusMsgEl.className = 'text-xs text-amber-400 mt-2';
+				playPauseBtn.disabled = true;
+				playPauseBtn.textContent = "▶";
+			};
+			
+			// Auto-play on select (wait for load)
+			audioEl.addEventListener('loadeddata', function playOnLoad() {
+				playPause();
+				audioEl.removeEventListener('loadeddata', playOnLoad);
+			}, { once: true });
+		}
+
+		// -----------------------------
+		// Time Formatting
+		// -----------------------------
+		function formatTime(sec) {
+			if (isNaN(sec)) return "0:00";
+			const minutes = Math.floor(sec / 60);
+			const seconds = Math.floor(sec % 60)
+				.toString()
+				.padStart(2, "0");
+			return `${minutes}:${seconds}`;
+		}
+
+		// -----------------------------
+		// Audio Player Controls
+		// -----------------------------
+		function playPause() {
+			if (!currentBeat) return;
+			if (audioEl.paused) {
+				const playPromise = audioEl.play();
+				if (playPromise !== undefined) {
+					playPromise
+						.then(() => {
+							playPauseBtn.textContent = "⏸";
+							console.log('Audio playing');
+						})
+						.catch(error => {
+							console.error('Playback error:', error);
+							statusMsgEl.textContent = `⚠️ Playback failed: ${error.message}. Click play to try again.`;
+							statusMsgEl.className = 'text-xs text-amber-400 mt-2';
+							playPauseBtn.textContent = "▶";
+						});
+				}
+			} else {
+				audioEl.pause();
+				playPauseBtn.textContent = "▶";
+			}
+		}
+
+		playPauseBtn.addEventListener("click", playPause);
+		playPauseBtn.disabled = true;
+
+		audioEl.addEventListener("loadedmetadata", () => {
+			durationEl.textContent = formatTime(audioEl.duration);
+		});
+
+		audioEl.addEventListener("timeupdate", () => {
+			const progress = (audioEl.currentTime / audioEl.duration) * 100;
+			seekBar.value = progress || 0;
+			currentTimeEl.textContent = formatTime(audioEl.currentTime);
+		});
+
+		audioEl.addEventListener("ended", () => {
+			playPauseBtn.textContent = "▶";
+			seekBar.value = 0;
+			currentTimeEl.textContent = "0:00";
+		});
+
+		seekBar.addEventListener("input", () => {
+			if (!currentBeat || isNaN(audioEl.duration)) return;
+			const pct = seekBar.value;
+			audioEl.currentTime = (pct / 100) * audioEl.duration;
+		});
+
+		// -----------------------------
+		// License Dropdown
+		// -----------------------------
+		function renderLicenses() {
+			licenseSelect.innerHTML = "";
+			licenses.forEach((license) => {
+				const option = document.createElement("option");
+				option.value = license.id;
+				option.textContent = `${license.name} – $${license.price.toFixed(2)}`;
+				licenseSelect.appendChild(option);
+			});
+			updateSelectedLicense();
+		}
+
+		function updateSelectedLicense() {
+			const selectedId = licenseSelect.value;
+			currentLicense = licenses.find((l) => l.id === selectedId) || licenses[0];
+			licensePriceEl.textContent = `$${currentLicense.price.toFixed(2)}`;
+		}
+
+		licenseSelect.addEventListener("change", updateSelectedLicense);
+
+		// -----------------------------
+		// Checkout Flow
+		// -----------------------------
+		buyBtn.addEventListener("click", async () => {
+			statusMsgEl.textContent = "";
+			statusMsgEl.className = 'text-xs text-slate-400 mt-2';
+			
+			if (!currentBeat) {
+				statusMsgEl.textContent = "Select a beat first.";
+				statusMsgEl.className = 'text-xs text-amber-400 mt-2';
+				return;
+			}
+			const email = buyerEmailEl.value.trim();
+			if (!email) {
+				statusMsgEl.textContent = "Enter your email so we can deliver your files.";
+				statusMsgEl.className = 'text-xs text-amber-400 mt-2';
+				return;
+			}
+
+			buyBtn.disabled = true;
+			buyBtn.textContent = "Processing...";
+			
+			try {
+				// Try Stripe checkout first
+				const res = await fetch("/api/create-checkout-session", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						beatId: currentBeat.id,
+						licenseId: currentLicense.id,
+						buyerEmail: email
+					})
+				});
+
+				const data = await res.json();
+
+				if (res.ok && data.checkoutUrl) {
+					// Redirect user to Stripe
+					window.location.href = data.checkoutUrl;
+					return;
+				}
+				
+				// If Stripe fails, fall back to dev mode
+				if (!res.ok) {
+					console.warn('Stripe checkout failed, using dev mode');
+					const devRes = await fetch("/dev/simulate-purchase", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							beatId: currentBeat.id,
+							licenseId: currentLicense.id,
+							email: email,
+							devKey: "dev_secret_key_here"
+						})
+					});
+
+					const devData = await devRes.json();
+					
+					if (devRes.ok) {
+						statusMsgEl.textContent = `✅ ${devData.message || 'Purchase simulated! Check your email.'}`;
+						statusMsgEl.className = 'text-xs text-emerald-400 mt-2';
+						buyerEmailEl.value = '';
+					} else {
+						throw new Error(devData.error || 'Dev purchase failed');
+					}
+				}
+			} catch (err) {
+				console.error('Checkout error:', err);
+				statusMsgEl.textContent = `⚠️ ${err.message || 'Error processing purchase. Please try again.'}`;
+				statusMsgEl.className = 'text-xs text-red-400 mt-2';
+			} finally {
+				buyBtn.disabled = false;
+				buyBtn.textContent = "💳 Buy Now – Get Beat + License";
+			}
+		});
+
+		// -----------------------------
+		// Init
+		// -----------------------------
+		loadBeats();
+		loadLicenses();
+	</script>
+</body>
+</html>

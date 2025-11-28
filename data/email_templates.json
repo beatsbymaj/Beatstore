@@ -1,0 +1,30 @@
+{
+  "welcome": {
+    "key": "welcome",
+    "name": "Welcome Email",
+    "active": true,
+    "subject": "Welcome to Beats By M.A.J.!",
+    "body": "Thanks for your first purchase."
+  },
+  "purchase": {
+    "key": "purchase",
+    "name": "Purchase Confirmation",
+    "active": true,
+    "subject": "Your Purchase Confirmation",
+    "body": "Here are your downloads."
+  },
+  "new_beat": {
+    "key": "new_beat",
+    "name": "New Beat Alert",
+    "active": false,
+    "subject": "New Beats Just Dropped",
+    "body": "Check out the latest drops."
+  },
+  "abandoned": {
+    "key": "abandoned",
+    "name": "Abandoned Cart",
+    "active": false,
+    "subject": "You left something behind",
+    "body": "Complete your purchase."
+  }
+}

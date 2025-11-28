@@ -1,0 +1,21 @@
+{
+  "payment": {
+    "stripeSecretKey": "",
+    "webhookSecret": ""
+  },
+  "email": {
+    "host": "",
+    "user": "",
+    "password": "",
+    "port": 587,
+    "secure": false
+  },
+  "store": {
+    "name": "Beats By M.A.J.",
+    "url": ""
+  },
+  "storage": {
+    "provider": "Local Server",
+    "bucket": ""
+  }
+}

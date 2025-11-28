@@ -1,0 +1,130 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "nodemailer": {
+      "name": "nodemailer",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1109804,
+          "name": "nodemailer",
+          "dependency": "nodemailer",
+          "title": "Nodemailer: Email to an unintended domain can occur due to Interpretation Conflict",
+          "url": "https://github.com/advisories/GHSA-mm7p-fcc7-pg87",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-20",
+            "CWE-436"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<7.0.7"
+        }
+      ],
+      "effects": [],
+      "range": "<7.0.7",
+      "nodes": [
+        "node_modules/nodemailer"
+      ],
+      "fixAvailable": {
+        "name": "nodemailer",
+        "version": "7.0.11",
+        "isSemVerMajor": true
+      }
+    },
+    "nodemon": {
+      "name": "nodemon",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "simple-update-notifier"
+      ],
+      "effects": [],
+      "range": "2.0.19 - 2.0.22",
+      "nodes": [
+        "node_modules/nodemon"
+      ],
+      "fixAvailable": {
+        "name": "nodemon",
+        "version": "3.1.11",
+        "isSemVerMajor": true
+      }
+    },
+    "semver": {
+      "name": "semver",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1101088,
+          "name": "semver",
+          "dependency": "semver",
+          "title": "semver vulnerable to Regular Expression Denial of Service",
+          "url": "https://github.com/advisories/GHSA-c2qf-rxjj-qqgw",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=7.0.0 <7.5.2"
+        }
+      ],
+      "effects": [
+        "simple-update-notifier"
+      ],
+      "range": "7.0.0 - 7.5.1",
+      "nodes": [
+        "node_modules/simple-update-notifier/node_modules/semver"
+      ],
+      "fixAvailable": {
+        "name": "nodemon",
+        "version": "3.1.11",
+        "isSemVerMajor": true
+      }
+    },
+    "simple-update-notifier": {
+      "name": "simple-update-notifier",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "semver"
+      ],
+      "effects": [
+        "nodemon"
+      ],
+      "range": "1.0.7 - 1.1.0",
+      "nodes": [
+        "node_modules/simple-update-notifier"
+      ],
+      "fixAvailable": {
+        "name": "nodemon",
+        "version": "3.1.11",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 1,
+      "high": 3,
+      "critical": 0,
+      "total": 4
+    },
+    "dependencies": {
+      "prod": 105,
+      "dev": 31,
+      "optional": 1,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 135
+    }
+  }
+}

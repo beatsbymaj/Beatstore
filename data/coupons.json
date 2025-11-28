@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SUMMER25",
+    "code": "SUMMER25",
+    "type": "percentage",
+    "value": 25,
+    "uses": 12,
+    "limit": 100,
+    "expiresAt": "2025-12-31",
+    "active": true,
+    "createdAt": "2025-11-27T15:41:28.993Z"
+  },
+  {
+    "id": "FIRSTBUY",
+    "code": "FIRSTBUY",
+    "type": "fixed",
+    "value": 10,
+    "uses": 45,
+    "limit": 500,
+    "expiresAt": "2025-12-31",
+    "active": true,
+    "createdAt": "2025-11-27T15:41:28.993Z"
+  }
+]

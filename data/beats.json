@@ -1,0 +1,47 @@
+[
+  {
+    "id": "rnb_vibes_002",
+    "title": "R&B Vibes 002",
+    "bpm": 96,
+    "key": "C# Minor",
+    "mood": "Smooth & Melodic",
+    "audioUrl": "/audio/rnb_vibes_002.wav",
+    "sales": 38,
+    "status": "active",
+    "tags": [
+      "rnb",
+      "melodic",
+      "smooth"
+    ],
+    "createdAt": "2025-11-27T15:41:28.985Z"
+  },
+  {
+    "id": "club_banger_003",
+    "title": "Club Banger 003",
+    "bpm": 150,
+    "key": "G Minor",
+    "mood": "Energetic & Heavy",
+    "audioUrl": "/audio/club_banger_003.wav",
+    "sales": 32,
+    "status": "active",
+    "tags": [
+      "club",
+      "energetic",
+      "bass"
+    ],
+    "createdAt": "2025-11-27T15:41:28.985Z"
+  },
+  {
+    "id": "bottom_of_the_map_1764275319309",
+    "title": "bottom of the map",
+    "bpm": 155,
+    "key": "",
+    "mood": "",
+    "audioUrl": "/audio/1764275319197-192021395-Untitled (1).wav",
+    "coverUrl": "",
+    "sales": 1,
+    "status": "active",
+    "tags": [],
+    "createdAt": "2025-11-27T20:28:39.309Z"
+  }
+]

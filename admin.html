@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard – Beats By M.A.J.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center font-bold text-lg">
+          M
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Beats By M.A.J.</h1>
+          <p class="text-xs text-slate-400">Admin Dashboard</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="px-3 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 transition">
+          👤 Admin
+        </button>
+        <button class="px-3 py-2 text-sm rounded-lg bg-red-600 hover:bg-red-700 transition">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 min-h-screen sticky top-16">
+      <nav class="p-4 space-y-1">
+        <button onclick="showTab('dashboard')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">📊</span>
+          <span class="font-medium">Dashboard</span>
+        </button>
+        <button onclick="showTab('beats')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">🎵</span>
+          <span class="font-medium">Beats</span>
+        </button>
+        <button onclick="showTab('licenses')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">📜</span>
+          <span class="font-medium">Licenses</span>
+        </button>
+        <button onclick="showTab('sales')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">💰</span>
+          <span class="font-medium">Sales</span>
+        </button>
+        <button onclick="showTab('coupons')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">🎟️</span>
+          <span class="font-medium">Coupons</span>
+        </button>
+        <button onclick="showTab('emails')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">✉️</span>
+          <span class="font-medium">Email Auto</span>
+        </button>
+        <button onclick="showTab('settings')" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3">
+          <span class="text-xl">⚙️</span>
+          <span class="font-medium">Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 max-w-7xl">
+      
+      <!-- DASHBOARD TAB -->
+      <div id="dashboard" class="tab-content active">
+        <h2 class="text-2xl font-bold mb-6">📊 Analytics Overview</h2>
+        
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <p class="text-sm text-slate-400 mb-1">Total Revenue</p>
+            <p class="text-3xl font-bold text-emerald-400">$12,450</p>
+            <p class="text-xs text-green-400 mt-2">↑ 18% from last month</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <p class="text-sm text-slate-400 mb-1">Total Sales</p>
+            <p class="text-3xl font-bold">347</p>
+            <p class="text-xs text-green-400 mt-2">↑ 12% from last month</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <p class="text-sm text-slate-400 mb-1">Active Beats</p>
+            <p class="text-3xl font-bold">28</p>
+            <p class="text-xs text-slate-400 mt-2">3 uploaded this week</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <p class="text-sm text-slate-400 mb-1">New Customers</p>
+            <p class="text-3xl font-bold">142</p>
+            <p class="text-xs text-green-400 mt-2">↑ 24% from last month</p>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">Revenue (Last 7 Days)</h3>
+            <canvas id="revenueChart"></canvas>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">Top Selling Beats</h3>
+            <canvas id="beatsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Recent Sales Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="font-semibold mb-4">Recent Sales</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="border-b border-slate-800">
+                <tr class="text-left text-slate-400">
+                  <th class="pb-3">Date</th>
+                  <th class="pb-3">Beat</th>
+                  <th class="pb-3">License</th>
+                  <th class="pb-3">Customer</th>
+                  <th class="pb-3">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="recentSalesBody" class="divide-y divide-slate-800">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEATS TAB -->
+      <div id="beats" class="tab-content">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold">🎵 Beat Management</h2>
+          <button onclick="openBeatModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            + Upload New Beat
+          </button>
+        </div>
+
+        <!-- Beat List -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="beatsList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- LICENSES TAB -->
+      <div id="licenses" class="tab-content">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold">📜 License Templates</h2>
+          <button onclick="openLicenseModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            + Create License
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="licensesList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- SALES TAB -->
+      <div id="sales" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">💰 Sales & Transactions</h2>
+        
+        <!-- Filters -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap gap-3">
+          <input id="salesFrom" type="date" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+          <input id="salesTo" type="date" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+          <select id="salesLicenseFilter" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm">
+            <option>All Licenses</option>
+            <option>Basic</option>
+            <option>Premium</option>
+            <option>Unlimited</option>
+            <option>Exclusive</option>
+          </select>
+          <button id="applySalesFilters" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-sm font-medium transition">
+            Apply Filters
+          </button>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="border-b border-slate-800">
+              <tr class="text-left text-slate-400">
+                <th class="pb-3">Transaction ID</th>
+                <th class="pb-3">Date</th>
+                <th class="pb-3">Beat</th>
+                <th class="pb-3">License</th>
+                <th class="pb-3">Customer</th>
+                <th class="pb-3">Amount</th>
+                <th class="pb-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody" class="divide-y divide-slate-800">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COUPONS TAB -->
+      <div id="coupons" class="tab-content">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold">🎟️ Coupon Management</h2>
+          <button onclick="openCouponModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            + Create Coupon
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="couponsList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- EMAILS TAB -->
+      <div id="emails" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">✉️ Email Automation</h2>
+
+        <!-- Email Templates -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>📧</span> Welcome Email
+            </h3>
+            <p class="text-sm text-slate-400 mb-4">Sent to new customers after first purchase</p>
+            <div class="flex gap-2">
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Preview</button>
+              <label class="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm cursor-pointer">
+                <input type="checkbox" checked class="rounded" />
+                <span>Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>🎁</span> Purchase Confirmation
+            </h3>
+            <p class="text-sm text-slate-400 mb-4">Sent immediately after purchase with download link</p>
+            <div class="flex gap-2">
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Preview</button>
+              <label class="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm cursor-pointer">
+                <input type="checkbox" checked class="rounded" />
+                <span>Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>🔥</span> New Beat Alert
+            </h3>
+            <p class="text-sm text-slate-400 mb-4">Notify customers when new beats are uploaded</p>
+            <div class="flex gap-2">
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Preview</button>
+              <label class="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm cursor-pointer">
+                <input type="checkbox" class="rounded" />
+                <span>Active</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-3 flex items-center gap-2">
+              <span>💸</span> Abandoned Cart
+            </h3>
+            <p class="text-sm text-slate-400 mb-4">Remind users who didn't complete checkout</p>
+            <div class="flex gap-2">
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+              <button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Preview</button>
+              <label class="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm cursor-pointer">
+                <input type="checkbox" class="rounded" />
+                <span>Active</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Send Broadcast -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="font-semibold mb-4">📣 Send Broadcast Email</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm mb-2 text-slate-400">Subject</label>
+              <input id="broadcastSubject" type="text" placeholder="e.g., New Beats Just Dropped!" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+            </div>
+            <div>
+              <label class="block text-sm mb-2 text-slate-400">Message</label>
+              <textarea id="broadcastMessage" rows="6" placeholder="Your message..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"></textarea>
+            </div>
+            <div class="flex gap-3">
+              <button id="sendBroadcast" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+                Send to All Customers
+              </button>
+              <button id="previewBroadcast" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition">
+                Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="settings" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">⚙️ Settings</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Payment Settings -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">💳 Payment Settings</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Stripe Secret Key</label>
+                <input id="setStripeKey" type="password" placeholder="sk_live_..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Webhook Secret</label>
+                <input id="setWebhookSecret" type="password" placeholder="whsec_..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <button id="savePayment" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-sm font-medium transition">
+                Save Payment Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- Email Settings -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">📧 Email Settings</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">SMTP Host</label>
+                <input id="setSmtpHost" type="text" placeholder="smtp.gmail.com" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">SMTP User</label>
+                <input id="setSmtpUser" type="email" placeholder="your@email.com" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">SMTP Password</label>
+                <input id="setSmtpPass" type="password" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <button id="saveEmail" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-sm font-medium transition">
+                Save Email Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- Store Settings -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">🏪 Store Settings</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Store Name</label>
+                <input id="setStoreName" type="text" value="Beats By M.A.J." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Store URL</label>
+                <input id="setStoreUrl" type="url" placeholder="https://yourdomain.com" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <button id="saveStore" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-sm font-medium transition">
+                Save Store Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- File Storage -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">📁 File Storage</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Storage Provider</label>
+                <select id="setStorageProvider" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm">
+                  <option>AWS S3</option>
+                  <option>Google Cloud Storage</option>
+                  <option>Local Server</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm mb-2 text-slate-400">Bucket / Container Name</label>
+                <input id="setStorageBucket" type="text" placeholder="beats-storage" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+              </div>
+              <button id="saveStorage" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-sm font-medium transition">
+                Save Storage Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  
+  <!-- Beat Upload Modal -->
+  <div id="beatModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Upload New Beat</h3>
+        <button onclick="closeBeatModal()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+      </div>
+      <form id="beatForm" class="space-y-4" enctype="multipart/form-data">
+        <div>
+          <label class="block text-sm mb-2">Beat Title *</label>
+          <input id="beatTitle" name="title" type="text" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm mb-2">BPM *</label>
+            <input id="beatBpm" name="bpm" type="number" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm mb-2">Key</label>
+            <input id="beatKey" name="key" type="text" placeholder="e.g., F Minor" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Mood / Description</label>
+          <textarea id="beatMood" name="mood" rows="3" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm mb-2">Main MP3 File *</label>
+            <input id="beatMp3" name="mp3" type="file" accept="audio/mpeg" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+            <p class="text-xs text-slate-400 mt-1">Provide an MP3 for web preview & basic leases.</p>
+          </div>
+          <div>
+            <label class="block text-sm mb-2">Main WAV File (Optional)</label>
+            <input id="beatWav" name="wav" type="file" accept="audio/wav" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+            <p class="text-xs text-slate-400 mt-1">High quality WAV for premium / unlimited.</p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">STEM Files (Trackouts, WAV) (Optional)</label>
+          <input id="beatStems" name="stems" type="file" multiple accept="audio/wav" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+          <p class="text-xs text-slate-400 mt-1">Upload multiple .wav stems. These are delivered for Unlimited/Exclusive licenses.</p>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Cover Image (Optional)</label>
+          <input id="beatCover" name="cover" type="file" accept="image/*" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Tags</label>
+          <input id="beatTags" name="tags" type="text" placeholder="trap, dark, 808s" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            Upload Beat
+          </button>
+          <button type="button" onclick="closeBeatModal()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- License Modal -->
+  <div id="licenseModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Create License Template</h3>
+        <button onclick="closeLicenseModal()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+      </div>
+      <form id="licenseForm" class="space-y-4">
+        <div>
+          <label class="block text-sm mb-2">License Tier *</label>
+          <select id="licenseTier" name="tier" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+            <option value="">Select a tier...</option>
+            <option value="basic">Basic</option>
+            <option value="premium">Premium</option>
+            <option value="unlimited">Unlimited</option>
+            <option value="exclusive">Exclusive</option>
+          </select>
+          <p class="text-xs text-slate-400 mt-1">This determines which contract template is used for purchases</p>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">License Name *</label>
+          <input id="licenseName" name="name" type="text" required placeholder="e.g., Premium Lease" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Price (USD) *</label>
+          <input id="licensePrice" name="price" type="number" required step="0.01" placeholder="59.99" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Files Included</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2"><input id="incMp3" type="checkbox" class="rounded" checked /> MP3</label>
+            <label class="flex items-center gap-2"><input id="incWav" type="checkbox" class="rounded" /> WAV</label>
+            <label class="flex items-center gap-2"><input id="incStems" type="checkbox" class="rounded" /> Stems (Trackouts)</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Stream Limit</label>
+          <input id="licenseStreamLimit" name="streamLimit" type="number" placeholder="100000" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+          <p class="text-xs text-slate-400 mt-1">Leave empty or -1 for unlimited</p>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Usage Terms (Summary)</label>
+          <textarea id="licenseUsage" name="usageTerms" rows="3" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" placeholder="Brief summary of usage rights..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Full License Contract *</label>
+          <textarea id="licenseContract" name="contractBody" rows="8" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg font-mono text-xs" placeholder="Full contract text that will be sent to customers upon purchase...&#10;&#10;Example:&#10;LICENSE AGREEMENT&#10;&#10;Beat: [Beat Title]&#10;License: [License Name]&#10;Date: [Purchase Date]&#10;&#10;Terms and conditions..."></textarea>
+          <p class="text-xs text-slate-400 mt-1">This full contract will be attached to purchase emails</p>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            Create License
+          </button>
+          <button type="button" onclick="closeLicenseModal()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Coupon Modal -->
+  <div id="couponModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Create Coupon</h3>
+        <button onclick="closeCouponModal()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+      </div>
+      <form id="couponForm" class="space-y-4">
+        <div>
+          <label class="block text-sm mb-2">Coupon Code *</label>
+          <input id="couponCode" name="code" type="text" required placeholder="e.g., SUMMER2025" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg uppercase" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Discount Type *</label>
+          <select id="couponType" name="type" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed Amount</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Discount Value *</label>
+          <input id="couponValue" name="value" type="number" required step="0.01" placeholder="20" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Expiration Date</label>
+          <input id="couponExpires" name="expiresAt" type="date" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div>
+          <label class="block text-sm mb-2">Usage Limit</label>
+          <input id="couponLimit" name="limit" type="number" placeholder="100" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg" />
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium transition">
+            Create Coupon
+          </button>
+          <button type="button" onclick="closeCouponModal()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // API Configuration
+    const API_BASE = '/api/admin';
+    let authToken = localStorage.getItem('admin_token');
+
+    // API Helper Functions
+    async function apiRequest(endpoint, options = {}) {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
+      
+      if (authToken && !options.skipAuth) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers
+      });
+      
+      if (response.status === 401 || response.status === 403) {
+        // Token invalid or expired
+        localStorage.removeItem('admin_token');
+        authToken = null;
+        showLoginPrompt();
+        throw new Error('Authentication required');
+      }
+      
+      return response.json();
+    }
+
+    // Check authentication on load
+    async function checkAuth() {
+      if (!authToken) {
+        showLoginPrompt();
+        return false;
+      }
+      
+      try {
+        await apiRequest('/verify');
+        return true;
+      } catch (err) {
+        showLoginPrompt();
+        return false;
+      }
+    }
+
+    // Show login prompt
+    function showLoginPrompt() {
+      const username = prompt('Admin Username:');
+      const password = prompt('Admin Password:');
+      
+      if (username && password) {
+        login(username, password);
+      }
+    }
+
+    // Login function
+    async function login(username, password) {
+      try {
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.token) {
+          authToken = data.token;
+          localStorage.setItem('admin_token', authToken);
+          alert('Login successful!');
+          location.reload();
+        } else {
+          alert('Invalid credentials');
+          showLoginPrompt();
+        }
+      } catch (err) {
+        alert('Login failed: ' + err.message);
+        showLoginPrompt();
+      }
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('admin_token');
+      authToken = null;
+      location.reload();
+    }
+
+    // Attach logout to button
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.querySelector('button:has-text("Logout"), header button[class*="red"]');
+      if (logoutBtn) {
+        const actualLogoutBtn = Array.from(document.querySelectorAll('header button')).find(btn => btn.textContent.includes('Logout'));
+        if (actualLogoutBtn) {
+          actualLogoutBtn.addEventListener('click', logout);
+        }
+      }
+    });
+    
+    // Tab Management
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-slate-800'));
+      document.getElementById(tabName).classList.add('active');
+      event.target.closest('.tab-btn').classList.add('bg-slate-800');
+    }
+
+    // Modal Management
+    function openBeatModal() {
+      // Reset editing state
+      editingBeatId = null;
+      document.getElementById('beatForm').reset();
+      // MP3 required for new beats
+      document.getElementById('beatMp3').required = true;
+      document.querySelector('#beatModal h3').textContent = 'Upload New Beat';
+      document.getElementById('beatModal').classList.remove('hidden');
+      document.getElementById('beatModal').classList.add('flex');
+    }
+    function closeBeatModal() {
+      document.getElementById('beatModal').classList.add('hidden');
+      document.getElementById('beatModal').classList.remove('flex');
+      editingBeatId = null;
+      document.getElementById('beatForm').reset();
+    }
+    function openLicenseModal() {
+      document.getElementById('licenseModal').classList.remove('hidden');
+      document.getElementById('licenseModal').classList.add('flex');
+    }
+    function closeLicenseModal() {
+      document.getElementById('licenseModal').classList.add('hidden');
+      document.getElementById('licenseModal').classList.remove('flex');
+    }
+    function openCouponModal() {
+      document.getElementById('couponModal').classList.remove('hidden');
+      document.getElementById('couponModal').classList.add('flex');
+    }
+    function closeCouponModal() {
+      document.getElementById('couponModal').classList.add('hidden');
+      document.getElementById('couponModal').classList.remove('flex');
+    }
+
+    // Initialize Charts
+    document.addEventListener('DOMContentLoaded', () => {
+      // Revenue Chart
+      const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+      new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Revenue ($)',
+            data: [1200, 1900, 3000, 2200, 2800, 3500, 2400],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#1e293b' } },
+            x: { grid: { color: '#1e293b' } }
+          }
+        }
+      });
+
+      // Beats Chart
+      const beatsCtx = document.getElementById('beatsChart').getContext('2d');
+      new Chart(beatsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Trap Wave 001', 'R&B Vibes 002', 'Club Banger 003', 'Street Heat'],
+          datasets: [{
+            label: 'Sales',
+            data: [45, 38, 32, 28],
+            backgroundColor: ['#10b981', '#059669', '#047857', '#065f46']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#1e293b' } },
+            x: { grid: { color: '#1e293b' } }
+          }
+        }
+      });
+
+      // Load Mock Data
+      checkAuth().then(isAuthenticated => {
+        if (isAuthenticated) {
+          loadAnalytics();
+          loadRecentSales();
+          loadBeats();
+          loadLicenses();
+          loadCoupons();
+          loadSalesTable();
+          loadSettings();
+          bindSettingsHandlers();
+          bindEmailControls();
+          bindEmailTemplateControls();
+        }
+      });
+    });
+
+    // Load Analytics
+    async function loadAnalytics() {
+      try {
+        const data = await apiRequest('/analytics');
+        
+        // Update stats cards
+        document.querySelector('.text-emerald-400').textContent = `$${data.totalRevenue.toLocaleString()}`;
+        document.querySelectorAll('.text-3xl.font-bold')[1].textContent = data.totalSales;
+        document.querySelectorAll('.text-3xl.font-bold')[2].textContent = data.activeBeats;
+        document.querySelectorAll('.text-3xl.font-bold')[3].textContent = data.newCustomers;
+        
+        // Update revenue chart
+        const revenueChart = Chart.getChart('revenueChart');
+        if (revenueChart && data.revenueByDay) {
+          revenueChart.data.datasets[0].data = data.revenueByDay;
+          revenueChart.update();
+        }
+        
+        // Update beats chart
+        const beatsChart = Chart.getChart('beatsChart');
+        if (beatsChart && data.topBeats) {
+          beatsChart.data.labels = data.topBeats.map(b => b.title);
+          beatsChart.data.datasets[0].data = data.topBeats.map(b => b.sales);
+          beatsChart.update();
+        }
+      } catch (err) {
+        console.error('Failed to load analytics:', err);
+      }
+    }
+
+    // Mock Data Loaders
+    async function loadRecentSales() {
+      try {
+        const sales = await apiRequest('/sales');
+        const recentSales = sales.slice(0, 5);
+        
+        const tbody = document.getElementById('recentSalesBody');
+        tbody.innerHTML = recentSales.map(s => `
+          <tr>
+            <td class="py-3">${new Date(s.date).toLocaleDateString()}</td>
+            <td class="py-3">${s.beatTitle}</td>
+            <td class="py-3">${s.licenseName}</td>
+            <td class="py-3">${s.customer}</td>
+            <td class="py-3 font-semibold text-emerald-400">$${s.amount}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load recent sales:', err);
+        // Fallback to mock data
+        const sales = [
+          { date: '2025-11-27', beatTitle: 'Trap Wave 001', licenseName: 'Premium', customer: 'john@example.com', amount: 59.99 },
+          { date: '2025-11-27', beatTitle: 'R&B Vibes 002', licenseName: 'Basic', customer: 'sarah@example.com', amount: 29.99 },
+          { date: '2025-11-26', beatTitle: 'Club Banger 003', licenseName: 'Unlimited', customer: 'mike@example.com', amount: 129.99 }
+        ];
+        const tbody = document.getElementById('recentSalesBody');
+        tbody.innerHTML = sales.map(s => `
+          <tr>
+            <td class="py-3">${s.date}</td>
+            <td class="py-3">${s.beatTitle}</td>
+            <td class="py-3">${s.licenseName}</td>
+            <td class="py-3">${s.customer}</td>
+            <td class="py-3 font-semibold text-emerald-400">$${s.amount}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function loadBeats() {
+      try {
+        const beats = await apiRequest('/beats');
+        renderBeats(beats);
+      } catch (err) {
+        console.error('Failed to load beats:', err);
+        // Fallback to mock data
+        const beats = [
+          { id: 1, title: 'Trap Wave 001', bpm: 140, key: 'F Minor', sales: 45, status: 'active' },
+          { id: 2, title: 'R&B Vibes 002', bpm: 96, key: 'C# Minor', sales: 38, status: 'active' },
+          { id: 3, title: 'Club Banger 003', bpm: 150, key: 'G Minor', sales: 32, status: 'active' }
+        ];
+        renderBeats(beats);
+      }
+    }
+
+    let editingBeatId = null;
+    function renderBeats(beats) {
+      const container = document.getElementById('beatsList');
+      container.innerHTML = beats.map(b => `
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              ${b.coverUrl ? `<img src="${b.coverUrl}" alt="${b.title}" class="w-12 h-12 rounded object-cover" />` : ''}
+              <div>
+                <h4 class="font-semibold">${b.title}</h4>
+                <p class="text-xs text-slate-400">${b.bpm} BPM • ${b.key || ''}</p>
+              </div>
+            </div>
+            <span class="px-2 py-1 text-xs rounded-full ${b.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}">${b.status}</span>
+          </div>
+          <p class="text-sm text-slate-400 mb-3">${b.sales || 0} sales</p>
+          ${b.audioUrl ? `<audio controls class="w-full mb-3"><source src="${b.audioUrl}" type="audio/mpeg" /></audio>` : ''}
+          <div class="flex gap-2">
+            <button data-id="${b.id}" class="btn-edit-beat flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+            <button data-id="${b.id}" class="btn-delete-beat px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-sm transition">Delete</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Attach events
+      container.querySelectorAll('.btn-delete-beat').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm('Delete this beat? This cannot be undone.')) return;
+          try {
+            await apiRequest(`/beats/${id}`, { method: 'DELETE' });
+            await loadBeats();
+          } catch (e) {
+            alert('Failed to delete beat.');
+          }
+        });
+      });
+      container.querySelectorAll('.btn-edit-beat').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          try {
+            const beats = await apiRequest('/beats');
+            const beat = beats.find(b => b.id === id);
+            if (!beat) return;
+            editingBeatId = id;
+            // Prefill form (files cannot be prefilled by browsers)
+            document.getElementById('beatTitle').value = beat.title || '';
+            document.getElementById('beatBpm').value = beat.bpm || '';
+            document.getElementById('beatKey').value = beat.key || '';
+            document.getElementById('beatMood').value = beat.mood || '';
+            document.getElementById('beatTags').value = (beat.tags || []).join(', ');
+            // Make audio optional when editing (only required for new beats)
+            document.getElementById('beatMp3').required = false;
+            // Update modal title
+            document.querySelector('#beatModal h3').textContent = 'Edit Beat';
+            document.getElementById('beatModal').classList.remove('hidden');
+            document.getElementById('beatModal').classList.add('flex');
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      });
+    }
+
+    let editingLicenseId = null;
+    async function loadLicenses() {
+      try {
+        const licenses = await apiRequest('/licenses');
+        renderLicenses(licenses);
+      } catch (err) {
+        console.error('Failed to load licenses:', err);
+        const licenses = [
+          { name: 'Basic Lease', price: 29.99, features: ['MP3 only', '50k streams', '1 music video'] },
+          { name: 'Premium Lease', price: 59.99, features: ['MP3 + WAV', '250k streams', '2 music videos'] },
+          { name: 'Unlimited Lease', price: 129.99, features: ['MP3 + WAV + Stems', 'Unlimited streams', 'Unlimited videos'] },
+          { name: 'Exclusive Rights', price: 499.99, features: ['All files', 'Full ownership', 'Beat removed from store'] }
+        ];
+        renderLicenses(licenses);
+      }
+    }
+
+    function renderLicenses(licenses) {
+      const container = document.getElementById('licensesList');
+      container.innerHTML = licenses.map(l => `
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex items-start justify-between mb-3">
+            <h4 class="font-semibold">${l.name}</h4>
+            <span class="text-emerald-400 font-bold">$${l.price}</span>
+          </div>
+          <ul class="text-xs text-slate-400 space-y-1 mb-4">
+            ${l.features.map(f => `<li>• ${f}</li>`).join('')}
+          </ul>
+          <div class="flex gap-2">
+            <button data-id="${l.id}" class="btn-edit-license flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+            <button data-id="${l.id}" class="btn-delete-license px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-sm transition">Delete</button>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.btn-delete-license').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm('Delete this license?')) return;
+          try {
+            await apiRequest(`/licenses/${id}`, { method: 'DELETE' });
+            await loadLicenses();
+          } catch {
+            alert('Failed to delete license.');
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-edit-license').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          try {
+            const licenses = await apiRequest('/licenses');
+            const lic = licenses.find(x => x.id === id);
+            if (!lic) return;
+            editingLicenseId = id;
+            document.getElementById('licenseTier').value = lic.tier || 'basic';
+            document.getElementById('licenseName').value = lic.name || '';
+            document.getElementById('licensePrice').value = lic.price || '';
+            document.getElementById('incMp3').checked = (lic.filesIncluded || []).includes('mp3');
+            document.getElementById('incWav').checked = (lic.filesIncluded || []).includes('wav');
+            document.getElementById('incStems').checked = (lic.filesIncluded || []).includes('stems');
+            document.getElementById('licenseStreamLimit').value = lic.streamLimit && lic.streamLimit > -1 ? lic.streamLimit : '';
+            document.getElementById('licenseUsage').value = lic.usageTerms || '';
+            
+            // Load contract body from template if tier is set
+            if (lic.tier) {
+              try {
+                const templates = await apiRequest('/license-templates');
+                const template = templates.find(t => t.id === lic.tier);
+                document.getElementById('licenseContract').value = template?.contractBody || '';
+              } catch {
+                document.getElementById('licenseContract').value = '';
+              }
+            } else {
+              document.getElementById('licenseContract').value = '';
+            }
+            
+            openLicenseModal();
+          } catch {}
+        });
+      });
+    }
+
+    let editingCouponId = null;
+    async function loadCoupons() {
+      try {
+        const coupons = await apiRequest('/coupons');
+        renderCoupons(coupons);
+      } catch (err) {
+        console.error('Failed to load coupons:', err);
+        const coupons = [
+          { code: 'SUMMER25', type: 'percentage', value: 25, uses: 12, limit: 100, expiresAt: '2025-12-31', active: true },
+          { code: 'FIRSTBUY', type: 'fixed', value: 10, uses: 45, limit: 500, expiresAt: '2025-12-31', active: true },
+          { code: 'FLASH50', type: 'percentage', value: 50, uses: 89, limit: 100, expiresAt: '2025-11-30', active: false }
+        ];
+        renderCoupons(coupons);
+      }
+    }
+
+    function renderCoupons(coupons) {
+      const container = document.getElementById('couponsList');
+      container.innerHTML = coupons.map(c => `
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h4 class="font-semibold font-mono">${c.code}</h4>
+              <p class="text-sm text-emerald-400">${c.type === 'percentage' ? c.value + '% off' : '$' + c.value + ' off'}</p>
+            </div>
+            <span class="px-2 py-1 text-xs rounded-full ${c.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}">
+              ${c.active ? 'Active' : 'Expired'}
+            </span>
+          </div>
+          <div class="text-xs text-slate-400 space-y-1 mb-4">
+            <p>Uses: ${c.uses}/${c.limit}</p>
+            <p>Expires: ${c.expiresAt || 'Never'}</p>
+          </div>
+          <div class="flex gap-2">
+            <button data-id="${c.id}" class="btn-edit-coupon flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">Edit</button>
+            <button data-id="${c.id}" class="btn-delete-coupon px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-sm transition">Delete</button>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.btn-delete-coupon').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm('Delete this coupon?')) return;
+          try {
+            await apiRequest(`/coupons/${id}`, { method: 'DELETE' });
+            await loadCoupons();
+          } catch {
+            alert('Failed to delete coupon.');
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-edit-coupon').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          try {
+            const coupons = await apiRequest('/coupons');
+            const c = coupons.find(x => x.id === id);
+            if (!c) return;
+            editingCouponId = id;
+            document.getElementById('couponCode').value = c.code || '';
+            document.getElementById('couponType').value = c.type || 'percentage';
+            document.getElementById('couponValue').value = c.value || '';
+            document.getElementById('couponLimit').value = c.limit || '';
+            document.getElementById('couponExpires').value = c.expiresAt ? c.expiresAt.substring(0,10) : '';
+            openCouponModal();
+          } catch {}
+        });
+      });
+    }
+
+    let _allSales = [];
+    async function loadSalesTable() {
+      try {
+        _allSales = await apiRequest('/sales');
+        renderSalesTable(_allSales);
+      } catch (err) {
+        console.error('Failed to load sales table:', err);
+      }
+    }
+
+    // Settings load/save
+    async function loadSettings() {
+      try {
+        const s = await apiRequest('/settings');
+        if (s.payment) {
+          document.getElementById('setStripeKey').value = s.payment.stripeSecretKey || '';
+          document.getElementById('setWebhookSecret').value = s.payment.webhookSecret || '';
+        }
+        if (s.email) {
+          document.getElementById('setSmtpHost').value = s.email.host || '';
+          document.getElementById('setSmtpUser').value = s.email.user || '';
+          document.getElementById('setSmtpPass').value = s.email.password || '';
+        }
+        if (s.store) {
+          document.getElementById('setStoreName').value = s.store.name || '';
+          document.getElementById('setStoreUrl').value = s.store.url || '';
+        }
+        if (s.storage) {
+          document.getElementById('setStorageProvider').value = s.storage.provider || 'Local Server';
+          document.getElementById('setStorageBucket').value = s.storage.bucket || '';
+        }
+      } catch (e) { console.warn('No settings yet'); }
+    }
+
+    function bindSettingsHandlers() {
+      const savePayment = document.getElementById('savePayment');
+      const saveEmail = document.getElementById('saveEmail');
+      const saveStore = document.getElementById('saveStore');
+      const saveStorage = document.getElementById('saveStorage');
+
+      async function saveAll(part) {
+        // Read current fields
+        const payload = {
+          payment: {
+            stripeSecretKey: document.getElementById('setStripeKey').value,
+            webhookSecret: document.getElementById('setWebhookSecret').value
+          },
+          email: {
+            host: document.getElementById('setSmtpHost').value,
+            user: document.getElementById('setSmtpUser').value,
+            password: document.getElementById('setSmtpPass').value,
+            port: 587,
+            secure: false
+          },
+          store: {
+            name: document.getElementById('setStoreName').value,
+            url: document.getElementById('setStoreUrl').value
+          },
+          storage: {
+            provider: document.getElementById('setStorageProvider').value,
+            bucket: document.getElementById('setStorageBucket').value
+          }
+        };
+        try {
+          const res = await apiRequest('/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.success) throw new Error('Save failed');
+          alert('Settings saved.');
+        } catch (e) { alert('Failed to save settings: ' + e.message); }
+      }
+
+      savePayment && savePayment.addEventListener('click', () => saveAll('payment'));
+      saveEmail && saveEmail.addEventListener('click', () => saveAll('email'));
+      saveStore && saveStore.addEventListener('click', () => saveAll('store'));
+      saveStorage && saveStorage.addEventListener('click', () => saveAll('storage'));
+    }
+
+    // Email controls
+    function bindEmailControls() {
+      const btnSend = document.getElementById('sendBroadcast');
+      const btnPreview = document.getElementById('previewBroadcast');
+      btnSend && btnSend.addEventListener('click', async () => {
+        const subject = document.getElementById('broadcastSubject').value.trim();
+        const message = document.getElementById('broadcastMessage').value.trim();
+        if (!subject || !message) return alert('Subject and message required.');
+        try {
+          const res = await apiRequest('/emails/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject, message })
+          });
+          if (!res.success) throw new Error('Broadcast failed');
+          alert('Broadcast recorded.');
+        } catch (e) { alert('Broadcast failed: ' + e.message); }
+      });
+      btnPreview && btnPreview.addEventListener('click', () => {
+        const subject = document.getElementById('broadcastSubject').value.trim();
+        const message = document.getElementById('broadcastMessage').value.trim();
+        const w = window.open('', '_blank');
+        w.document.write(`<h3>${subject}</h3><div><pre style="white-space:pre-wrap">${message}</pre></div>`);
+        w.document.close();
+      });
+    }
+
+    async function fetchTemplates() {
+      try { return await apiRequest('/email-templates'); } catch { return {}; }
+    }
+
+    function bindEmailTemplateControls() {
+      // Map card title text to template keys
+      const titleToKey = {
+        'Welcome Email': 'welcome',
+        'Purchase Confirmation': 'purchase',
+        'New Beat Alert': 'new_beat',
+        'Abandoned Cart': 'abandoned'
+      };
+      // For each card, wire Edit/Preview/Active
+      document.querySelectorAll('#emails .bg-slate-900.border').forEach(card => {
+        const titleEl = card.querySelector('h3');
+        if (!titleEl) return;
+        const titleText = titleEl.textContent.trim().replace(/^[^\w]*|[^\w]*$/g,'');
+        const key = titleToKey[titleText];
+        if (!key) return;
+
+        const [btnEdit, btnPreview] = card.querySelectorAll('button');
+        const activeCb = card.querySelector('input[type="checkbox"]');
+
+        if (btnEdit) btnEdit.addEventListener('click', async () => {
+          const templates = await fetchTemplates();
+          const tpl = templates[key] || { subject: '', body: '', active: false };
+          const subject = prompt('Subject', tpl.subject || '');
+          if (subject === null) return;
+          const body = prompt('Body (plain text)', tpl.body || '');
+          if (body === null) return;
+          const payload = {}; payload[key] = { ...(templates[key]||{}), subject, body };
+          const res = await apiRequest('/email-templates', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+          });
+          if (!res.success) alert('Failed to save template');
+        });
+
+        if (btnPreview) btnPreview.addEventListener('click', async () => {
+          const templates = await fetchTemplates();
+          const tpl = templates[key] || { subject: '', body: '' };
+          const w = window.open('', '_blank');
+          w.document.write(`<h3>${tpl.subject || '(no subject)'}</h3><div><pre style="white-space:pre-wrap">${tpl.body || '(empty)'} </pre></div>`);
+          w.document.close();
+        });
+
+        if (activeCb) activeCb.addEventListener('change', async () => {
+          const templates = await fetchTemplates();
+          const payload = {}; payload[key] = { ...(templates[key]||{}), active: activeCb.checked };
+          const res = await apiRequest('/email-templates', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+          });
+          if (!res.success) alert('Failed to update template');
+        });
+      });
+    }
+
+    function renderSalesTable(sales) {
+      const tbody = document.getElementById('salesTableBody');
+      tbody.innerHTML = sales.map(s => `
+        <tr>
+          <td class="py-3"><code class="text-xs">${s.id}</code></td>
+          <td class="py-3 text-xs">${new Date(s.date).toLocaleString()}</td>
+          <td class="py-3">${s.beatTitle}</td>
+          <td class="py-3">${s.licenseName}</td>
+          <td class="py-3 text-sm">${s.customer}</td>
+          <td class="py-3 font-semibold text-emerald-400">$${s.amount}</td>
+          <td class="py-3"><span class="px-2 py-1 text-xs rounded-full bg-emerald-500/20 text-emerald-400">${s.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('applySalesFilters');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const fromVal = document.getElementById('salesFrom').value;
+          const toVal = document.getElementById('salesTo').value;
+          const lic = document.getElementById('salesLicenseFilter').value;
+          const from = fromVal ? new Date(fromVal) : null;
+          const to = toVal ? new Date(toVal) : null;
+          const filtered = _allSales.filter(s => {
+            const d = new Date(s.date);
+            if (from && d < from) return false;
+            if (to) {
+              const end = new Date(to);
+              end.setHours(23,59,59,999);
+              if (d > end) return false;
+            }
+            if (lic && lic !== 'All Licenses' && s.licenseName?.toLowerCase() !== lic.toLowerCase()) return false;
+            return true;
+          });
+          renderSalesTable(filtered);
+        });
+      }
+    });
+
+    // Wait for DOM to be ready before attaching form handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      // Form Handlers
+      const beatForm = document.getElementById('beatForm');
+      if (beatForm) {
+        beatForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            if (!authToken) {
+              showLoginPrompt();
+              return;
+            }
+            const formEl = e.target;
+            if (editingBeatId) {
+              // Check if files are being updated
+              const mp3File = document.getElementById('beatMp3').files[0];
+              const wavFile = document.getElementById('beatWav').files[0];
+              const stemFiles = Array.from(document.getElementById('beatStems').files);
+              const coverFile = document.getElementById('beatCover').files[0];
+
+              if (mp3File || wavFile || stemFiles.length || coverFile) {
+                const filesFd = new FormData();
+                if (mp3File) filesFd.append('mp3', mp3File);
+                if (wavFile) filesFd.append('wav', wavFile);
+                stemFiles.forEach(f => filesFd.append('stems', f));
+                if (coverFile) filesFd.append('cover', coverFile);
+                console.log('Uploading replacement files for beat:', editingBeatId);
+                const filesResp = await fetch(`${API_BASE}/beats/${editingBeatId}/files`, { method: 'PUT', headers: { 'Authorization': `Bearer ${authToken}` }, body: filesFd });
+                const filesData = await filesResp.json();
+                if (!filesResp.ok || !filesData.success) throw new Error(filesData.error || 'File upload failed');
+                console.log('Files updated:', filesData);
+              }
+              
+              // Update metadata
+              const payload = {
+                title: document.getElementById('beatTitle').value.trim(),
+                bpm: parseInt(document.getElementById('beatBpm').value, 10),
+                key: document.getElementById('beatKey').value.trim(),
+                mood: document.getElementById('beatMood').value.trim(),
+                tags: document.getElementById('beatTags').value.split(',').map(t => t.trim()).filter(Boolean)
+              };
+              const data = await apiRequest(`/beats/${editingBeatId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!data.success) throw new Error('Update failed');
+              alert('Beat updated successfully!');
+            } else {
+              // Create beat with files
+              const tagsValue = document.getElementById('beatTags').value.trim();
+              const mp3File = document.getElementById('beatMp3').files[0];
+              const wavFile = document.getElementById('beatWav').files[0];
+              const stemFiles = Array.from(document.getElementById('beatStems').files);
+              if (!mp3File && !wavFile) throw new Error('Provide at least an MP3 or WAV file');
+              const fd = new FormData();
+              fd.append('title', document.getElementById('beatTitle').value.trim());
+              fd.append('bpm', document.getElementById('beatBpm').value.trim());
+              fd.append('key', document.getElementById('beatKey').value.trim());
+              fd.append('mood', document.getElementById('beatMood').value.trim());
+              if (tagsValue) fd.append('tags', tagsValue);
+              if (mp3File) fd.append('mp3', mp3File);
+              if (wavFile) fd.append('wav', wavFile);
+              stemFiles.forEach(f => fd.append('stems', f));
+              const coverFile = document.getElementById('beatCover').files[0];
+              if (coverFile) fd.append('cover', coverFile);
+              console.log('Uploading beat with new multi-file data');
+              const resp = await fetch(`${API_BASE}/beats`, { method: 'POST', headers: { 'Authorization': `Bearer ${authToken}` }, body: fd });
+              const data = await resp.json();
+              if (!resp.ok || !data.success) throw new Error(data.error || 'Upload failed');
+              alert('Beat uploaded successfully!');
+            }
+            editingBeatId = null;
+            formEl.reset();
+            closeBeatModal();
+            await loadBeats();
+          } catch (err) {
+            console.error('Beat upload error:', err);
+            alert('Beat upload failed: ' + err.message);
+          }
+        });
+      }
+
+      const licenseForm = document.getElementById('licenseForm');
+      if (licenseForm) {
+        licenseForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            const name = document.getElementById('licenseName').value.trim();
+            const price = parseFloat(document.getElementById('licensePrice').value);
+            const filesIncluded = [
+              document.getElementById('incMp3').checked ? 'mp3' : null,
+              document.getElementById('incWav').checked ? 'wav' : null,
+              document.getElementById('incStems').checked ? 'stems' : null,
+            ].filter(Boolean);
+            const streamLimitRaw = document.getElementById('licenseStreamLimit').value;
+            const streamLimit = streamLimitRaw ? parseInt(streamLimitRaw, 10) : -1;
+            const usageTerms = document.getElementById('licenseUsage').value.trim();
+            const tier = document.getElementById('licenseTier').value;
+            const contractBody = document.getElementById('licenseContract').value.trim();
+
+            const payload = { name, price, filesIncluded, streamLimit, usageTerms, tier, contractBody };
+            if (editingLicenseId) {
+              const data = await apiRequest(`/licenses/${editingLicenseId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!data.success) throw new Error('Update failed');
+              alert('License updated.');
+            } else {
+              const data = await apiRequest('/licenses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!data.success) throw new Error('Create failed');
+              alert('License created.');
+            }
+            editingLicenseId = null;
+            closeLicenseModal();
+            await loadLicenses();
+          } catch (err) {
+            alert('Failed to save license: ' + err.message);
+          }
+        });
+      }
+
+      const couponForm = document.getElementById('couponForm');
+      if (couponForm) {
+        couponForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            const code = document.getElementById('couponCode').value.trim().toUpperCase();
+            const type = document.getElementById('couponType').value;
+            const value = parseFloat(document.getElementById('couponValue').value);
+            const limitRaw = document.getElementById('couponLimit').value;
+            const limit = limitRaw ? parseInt(limitRaw, 10) : 9999;
+            const expiresAt = document.getElementById('couponExpires').value || null;
+            const payload = { code, type, value, limit, expiresAt };
+
+            if (editingCouponId) {
+              const data = await apiRequest(`/coupons/${editingCouponId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!data.success) throw new Error('Update failed');
+              alert('Coupon updated.');
+            } else {
+              const data = await apiRequest('/coupons', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!data.success) throw new Error('Create failed');
+              alert('Coupon created.');
+            }
+            editingCouponId = null;
+            closeCouponModal();
+            await loadCoupons();
+          } catch (err) {
+            alert('Failed to save coupon: ' + err.message);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

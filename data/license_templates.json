@@ -1,0 +1,26 @@
+[
+  {
+    "id": "basic",
+    "name": "Basic Lease",
+    "body": "Basic Lease Agreement\nYou are granted non-exclusive rights to use the beat in one (1) music video and up to 50,000 streams.",
+    "updatedAt": "2025-11-28T06:03:28.451Z"
+  },
+  {
+    "id": "premium",
+    "name": "Premium Lease",
+    "body": "Premium Lease Agreement\nIncludes MP3 + WAV. Up to 250,000 streams and two (2) music videos.",
+    "updatedAt": "2025-11-28T06:03:28.452Z"
+  },
+  {
+    "id": "unlimited",
+    "name": "Unlimited Lease",
+    "body": "Unlimited Lease Agreement\nUnlimited streams, unlimited videos, includes stems.",
+    "updatedAt": "2025-11-28T06:03:28.452Z"
+  },
+  {
+    "id": "exclusive",
+    "name": "Exclusive Rights",
+    "body": "Exclusive Rights Agreement\nFull ownership transfer after purchase. Beat removed from store.",
+    "updatedAt": "2025-11-28T06:03:28.452Z"
+  }
+]
