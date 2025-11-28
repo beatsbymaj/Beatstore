@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+# env
+.env
+# macOS
+.DS_Store
+# logs
+*.log
+server.log
+# uploads & temp
+audio/
+uploads/
+temp_zips/
+# editor
+.vscode/
