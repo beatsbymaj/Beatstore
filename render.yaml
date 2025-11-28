@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: beatstore
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    plan: starter
+    disk:
+      name: media-data
+      mountPath: /data
+      sizeGB: 10
+    # Set environment variables in the Render dashboard; this file intentionally avoids secrets
+    # You can also set BASE_URL to https://beatsbymaj.com after DNS is live

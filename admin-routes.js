@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs').promises;
 const path = require('path');
 const multer = require('multer');
+const fssync = require('fs');
 
 // JWT secret from environment or default (CHANGE IN PRODUCTION!)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -13,6 +14,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync('admin123', 10);
 
+// Determine media root (persistent disk on Render mounted at /data)
+const MEDIA_ROOT = process.env.MEDIA_ROOT || (fssync.existsSync('/data') ? '/data' : __dirname);
+
+// Ensure media directories exist
+['audio', path.join('audio', 'stems'), 'uploads'].forEach(dir => {
+  try { fssync.mkdirSync(path.join(MEDIA_ROOT, dir), { recursive: true }); } catch {}
+});
+
 // File upload configuration (supports mp3, wav, stems, cover)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -20,7 +29,7 @@ const storage = multer.diskStorage({
     if (file.fieldname === 'mp3' || file.fieldname === 'wav') baseDir = 'audio';
     if (file.fieldname === 'stems') baseDir = path.join('audio', 'stems');
     if (file.fieldname === 'cover') baseDir = 'uploads';
-    cb(null, path.join(__dirname, baseDir));
+    cb(null, path.join(MEDIA_ROOT, baseDir));
   },
   filename: (req, file, cb) => {
     const safeOriginal = file.originalname.replace(/[^a-zA-Z0-9_.-]/g, '_');

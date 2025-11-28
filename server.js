@@ -14,12 +14,20 @@ app.use(bodyParser.json());
 
 // Serve index2.html at root (MUST come before static middleware)
 const path = require('path');
+const fssync = require('fs');
+
+// Determine media root (persistent disk on Render mounted at /data)
+const MEDIA_ROOT = process.env.MEDIA_ROOT || (fssync.existsSync('/data') ? '/data' : __dirname);
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index2.html'));
 });
 
 // Serve frontend static files from project root (so index2.html is accessible)
 app.use(express.static(path.join(__dirname)));
+
+// Serve uploaded media from MEDIA_ROOT
+app.use('/audio', express.static(path.join(MEDIA_ROOT, 'audio')));
+app.use('/uploads', express.static(path.join(MEDIA_ROOT, 'uploads')));
 
 // Admin routes
 const adminRoutes = require('./admin-routes');
@@ -255,8 +263,8 @@ async function handleSuccessfulPurchase({ beatId, licenseId, email }) {
   }
   if (included.includes('stems') && Array.isArray(beat.stemUrls)) beat.stemUrls.forEach(u => filePaths.push({ type: 'stem', url: u }));
 
-  // Generate base download URLs (these assume static serving of audio path)
-  const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+  // Generate base download URLs (these assume static serving of audio/uploads paths)
+  const baseUrl = process.env.BASE_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
   const downloadUrls = filePaths.map(fp => `${baseUrl}${fp.url}`);
 
   const licenseText = `Beats By M.A.J. – ${license.name}\n\nBeat Title: ${beat.title}\nBuyer Email: ${email}\nLicense ID: ${license.id}\n\nUsage Terms:\n${license.usageTerms || 'Standard licensing terms apply.'}\n\nFiles Included: ${included.join(', ')}\nStream Limit: ${license.streamLimit === -1 ? 'Unlimited' : license.streamLimit}\n\nDownload Links:\n${downloadUrls.join('\n')}`;
@@ -275,7 +283,11 @@ async function handleSuccessfulPurchase({ beatId, licenseId, email }) {
   // Resolve local file system paths and collect for possible zipping
   const resolvedMedia = [];
   for (const fp of filePaths) {
-    const diskPath = path.join(__dirname, fp.url.startsWith('/') ? fp.url : `/${fp.url}`);
+    const webPath = fp.url.startsWith('/') ? fp.url : `/${fp.url}`;
+    const isMedia = webPath.startsWith('/audio') || webPath.startsWith('/uploads');
+    const diskPath = isMedia
+      ? path.join(MEDIA_ROOT, webPath.substring(1))
+      : path.join(__dirname, webPath.substring(1));
     try {
       await fs.access(diskPath);
       resolvedMedia.push({ ...fp, diskPath });
@@ -287,7 +299,7 @@ async function handleSuccessfulPurchase({ beatId, licenseId, email }) {
   // If stems are included or more than 2 files, create a zip bundle
   if (resolvedMedia.length && (included.includes('stems') || resolvedMedia.length > 2)) {
     try {
-      const zipsDir = path.join(__dirname, 'temp_zips');
+      const zipsDir = path.join(MEDIA_ROOT, 'temp_zips');
       if (!fssync.existsSync(zipsDir)) fssync.mkdirSync(zipsDir);
       const zipName = `delivery_${beat.id}_${license.id}_${Date.now()}.zip`;
       const zipPath = path.join(zipsDir, zipName);
