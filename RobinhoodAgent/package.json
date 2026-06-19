@@ -1,0 +1,14 @@
+{
+  "name": "robinhood-agent",
+  "version": "1.0.0",
+  "description": "Claude AI agent powered by the Robinhood trading MCP server",
+  "type": "module",
+  "main": "agent.js",
+  "scripts": {
+    "start": "node agent.js",
+    "dev": "node --watch agent.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.55.0"
+  }
+}
