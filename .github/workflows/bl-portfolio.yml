@@ -1,0 +1,48 @@
+name: bl-portfolio
+
+# Daily after the US close (21:45 UTC = 4:45pm EST / 5:45pm EDT), Mon-Fri,
+# plus a weekly SPY comparison on Saturday. Logs are committed back to the repo.
+# Scheduled runs only fire from the default branch.
+on:
+  schedule:
+    - cron: "45 21 * * 1-5"
+    - cron: "17 14 * * 6"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bl-portfolio
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bl_portfolio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Daily rebalance
+        if: github.event.schedule != '17 14 * * 6'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BROKER: ${{ vars.BROKER || 'local' }}
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: python run_daily.py
+      - name: Weekly report vs SPY
+        if: github.event.schedule == '17 14 * * 6' || github.event_name == 'workflow_dispatch'
+        run: python weekly_report.py
+      - name: Commit logs
+        run: |
+          git config user.name "bl-portfolio-bot"
+          git config user.email "bl-portfolio-bot@users.noreply.github.com"
+          git add logs reports || true
+          git diff --cached --quiet || git commit -m "bl-portfolio: logs for $(date -u +%F)"
+          git push
