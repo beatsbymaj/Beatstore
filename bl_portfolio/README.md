@@ -36,7 +36,18 @@ This builds on [aardisaputra/uchicago_case3](https://github.com/aardisaputra/uch
 ## Two bugs in the notebook, fixed here
 
 - `exp_ret()` passed `tau` where the risk-aversion `delta` belonged when it computed the implied prior.
-- `fin_weights()` multiplied by `2·(τΣ)⁻¹` and then scaled the weights to unit length (L2 norm), so net exposure was never controlled. That is where the very large net shorts came from (see the diagnostics cell in `case3.ipynb`). Here, net and per-name limits are applied explicitly.
+- `fin_weights()` multiplied by `2·(τΣ)⁻¹` and then scaled the weights to unit length (L2 norm), so net exposure was never controlled. On top of that, when the gate fails the notebook falls back to the *sum* of every book it has accepted so far, not their average. So exposure grows until the list resets.
+
+Measured on case3data (the diagnostics cell in `case3.ipynb`, 2,509 days):
+
+| | Notebook as written |
+|---|---|
+| Net exposure | min −508%, median +522%, max +4,646% |
+| Most negative single weight | −317% |
+| Days net short / days below −50% net | 39 / 23 |
+| Annualised Sharpe | 0.60 (1/N on the same data: 0.86) |
+
+Here, net, gross, and per-name limits are applied explicitly.
 
 The notebook's gate compared the spread of weight × return across the nine assets on a single day. Here, the gate compares each book's Sharpe over the past 63 days, which is the same rule measured over time.
 
